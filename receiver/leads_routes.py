@@ -1,3 +1,6 @@
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from git_sync import sync as git_sync
 # MillyExt Receiver - Lead Scraper Routes
 # Manages batch URL submissions, result collection, PostgreSQL lead store with dedup
 # v2.0 - Migrated from master_leads.json to PostgreSQL
@@ -215,6 +218,12 @@ async def receive_results(request: Request):
         batch["updated_leads"] = updated_count
         with open(batch_file, "w") as f:
             json.dump(batch, f, indent=2)
+
+    # Auto-sync to GitHub after every batch
+    try:
+        git_sync(f"leads: batch {batch_id} +{new_count} new +{updated_count} updated")
+    except Exception as e:
+        print(f"[GIT_SYNC] non-fatal error: {e}")
 
     return {
         "status": "received",
