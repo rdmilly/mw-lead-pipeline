@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MW Lead Pipeline</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e17;--surface:#111827;--surface2:#1a2332;--border:#1e2d3d;--text:#e2e8f0;--text-dim:#64748b;--hot:#ef4444;--hot-glow:rgba(239,68,68,0.15);--warm:#f59e0b;--warm-glow:rgba(245,158,11,0.15);--cold:#3b82f6;--cold-glow:rgba(59,130,246,0.1);--dead:#475569;--green:#10b981;--green-glow:rgba(16,185,129,0.15);--accent:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(139,92,246,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.container{max-width:1400px;margin:0 auto;padding:24px;position:relative;z-index:1}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.header h1{font-size:24px;font-weight:600;letter-spacing:-0.5px}
+.header h1 span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:16px}
+.status-badge{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;font-size:13px;font-family:'JetBrains Mono',monospace;background:var(--green-glow);border:1px solid rgba(16,185,129,0.3);color:var(--green)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.last-update{font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
+.metrics-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color 0.3s}
+.metric-card:hover{border-color:var(--accent)}
+.metric-label{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.metric-value{font-size:36px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.metric-sub{font-size:13px;color:var(--text-dim);margin-top:6px;font-family:'JetBrains Mono',monospace}
+.metric-card.hot{border-left:3px solid var(--hot)}.metric-card.hot .metric-value{color:var(--hot)}
+.metric-card.warm{border-left:3px solid var(--warm)}.metric-card.warm .metric-value{color:var(--warm)}
+.metric-card.total{border-left:3px solid var(--accent)}.metric-card.total .metric-value{color:var(--accent)}
+.metric-card.email{border-left:3px solid var(--green)}.metric-card.email .metric-value{color:var(--green)}
+.metric-card.exported{border-left:3px solid var(--warm)}.metric-card.exported .metric-value{color:var(--warm)}
+.tier-bar-container{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+.tier-bar-label{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.tier-bar{display:flex;height:32px;border-radius:6px;overflow:hidden;gap:2px}
+.tier-segment{display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;color:white;min-width:40px;transition:flex-grow 0.5s ease}
+.tier-segment.hot{background:var(--hot)}.tier-segment.warm{background:var(--warm);color:#000}.tier-segment.cold{background:var(--cold)}.tier-segment.dead{background:var(--dead)}
+.tier-legend{display:flex;gap:24px;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim)}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+.grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.panel-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.layer-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.layer-row:last-child{border-bottom:none}
+.layer-status{font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 10px;border-radius:4px}
+.layer-status.active{background:var(--green-glow);color:var(--green);border:1px solid rgba(16,185,129,0.3)}
+.layer-status.disabled{background:rgba(100,116,139,0.1);color:var(--text-dim);border:1px solid rgba(100,116,139,0.2)}
+.gauge-container{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.gauge-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:6px}
+.gauge-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.gauge-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--warm));transition:width 0.5s ease}
+.leads-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+.leads-table th{text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);border-bottom:1px solid var(--border)}
+.leads-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:12px}
+.leads-table tr:hover td{background:var(--surface2)}
+.score-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-weight:600;font-size:12px}
+.score-badge.hot{background:var(--hot-glow);color:var(--hot)}
+.score-badge.warm{background:var(--warm-glow);color:var(--warm)}
+.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.activity-item:last-child{border-bottom:none}
+.activity-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);min-width:50px}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.full-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+.loading{text-align:center;padding:40px;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
+@media(max-width:900px){.metrics-row{grid-template-columns:repeat(2,1fr)}.grid-2col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header"><h1><span>MW</span> Lead Pipeline</h1><div class="header-right"><div class="status-badge"><div class="status-dot"></div>PIPELINE ACTIVE</div><div class="last-update" id="lastUpdate">Loading...</div></div></div>
+<div class="metrics-row">
+<div class="metric-card total"><div class="metric-label">Total Leads</div><div class="metric-value" id="totalLeads">—</div><div class="metric-sub" id="totalSub"></div></div>
+<div class="metric-card email"><div class="metric-label">With Email</div><div class="metric-value" id="withEmail">—</div><div class="metric-sub" id="emailSub"></div></div>
+<div class="metric-card hot"><div class="metric-label">Hot Leads</div><div class="metric-value" id="hotLeads">—</div><div class="metric-sub">score &ge; 80</div></div>
+<div class="metric-card warm"><div class="metric-label">Warm Leads</div><div class="metric-value" id="warmLeads">—</div><div class="metric-sub">score 50-79</div></div>
+<div class="metric-card exported"><div class="metric-label">Exported</div><div class="metric-value" id="exported">—</div><div class="metric-sub">to Instantly</div></div>
+</div>
+<div class="tier-bar-container"><div class="tier-bar-label">Lead Distribution by Tier</div><div class="tier-bar" id="tierBar"></div><div class="tier-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--hot)"></div>Hot</div><div class="legend-item"><div class="legend-dot" style="background:var(--warm)"></div>Warm</div><div class="legend-item"><div class="legend-dot" style="background:var(--cold)"></div>Cold</div><div class="legend-item"><div class="legend-dot" style="background:var(--dead)"></div>Dead</div></div></div>
+<div class="grid-2col">
+<div class="panel"><div class="panel-title">Enrichment Layers</div>
+<div class="layer-row"><div>L1 - Google Places</div><div class="layer-status active">ACTIVE</div></div>
+<div class="layer-row"><div>L2 - CCB Database</div><div class="layer-status active">ACTIVE</div></div>
+<div class="layer-row"><div>L3 - Website Scraping</div><div class="layer-status active">ACTIVE</div></div>
+<div class="layer-row"><div>L4 - Size Heuristics</div><div class="layer-status active">ACTIVE</div></div>
+<div class="layer-row"><div>L5 - BBB Check</div><div class="layer-status disabled">PAUSED</div></div>
+<div class="layer-row"><div>L6 - Camoufox Fallback</div><div class="layer-status active">ACTIVE</div></div>
+<div class="layer-row"><div>L7 - LinkedIn Finder</div><div class="layer-status active">ACTIVE</div></div>
+<div class="gauge-container"><div class="gauge-label"><span>Serper API Budget</span><span id="serperCount">—/2,500</span></div><div class="gauge-bar"><div class="gauge-fill" id="serperGauge" style="width:1%"></div></div></div>
+</div>
+<div class="panel"><div class="panel-title">Pipeline Activity</div><div id="activityFeed"><div class="loading">Loading activity...</div></div></div>
+</div>
+<div class="full-panel"><div class="panel-title">Top Leads</div>
+<table class="leads-table"><thead><tr><th>Score</th><th>Business</th><th>Email</th><th>Category</th><th>City</th><th>Phone</th></tr></thead>
+<tbody id="leadsTableBody"><tr><td colspan="6" class="loading">Loading leads...</td></tr></tbody></table>
+</div>
+</div>
+<script>
+const API_BASE=window.location.origin,API_KEY='milly-dev-key-change-me',headers={'X-API-Key':API_KEY};
+function fmt(n){return n!=null?n.toLocaleString():'—'}
+async function fetchStats(){try{const r=await fetch(API_BASE+'/api/v1/leads/stats');const d=await r.json();document.getElementById('totalLeads').textContent=fmt(d.master_leads);document.getElementById('totalSub').textContent=fmt(d.with_phone)+' with phone';document.getElementById('withEmail').textContent=fmt(d.with_email);document.getElementById('emailSub').textContent=(d.with_email&&d.master_leads?((d.with_email/d.master_leads)*100).toFixed(1):0)+'% coverage';document.getElementById('exported').textContent=fmt(d.exported);const t=d.tier_breakdown||{},hot=t.hot||0,warm=t.warm||0,cold=t.cold||0,dead=t.dead||0;document.getElementById('hotLeads').textContent=fmt(hot);document.getElementById('warmLeads').textContent=fmt(warm);const total=hot+warm+cold+dead;if(total>0){document.getElementById('tierBar').innerHTML=(hot>0?'<div class="tier-segment hot" style="flex-grow:'+hot+'">'+hot+'</div>':'')+(warm>0?'<div class="tier-segment warm" style="flex-grow:'+warm+'">'+warm+'</div>':'')+(cold>0?'<div class="tier-segment cold" style="flex-grow:'+cold+'">'+fmt(cold)+'</div>':'')+(dead>0?'<div class="tier-segment dead" style="flex-grow:'+dead+'">'+dead+'</div>':'');}document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString();}catch(e){console.error(e)}}
+async function fetchLeads(){try{const r=await fetch(API_BASE+'/api/v1/leads/master?limit=15&sort_by=lead_score&order=DESC',{headers});const d=await r.json();if(d.leads&&d.leads.length>0){document.getElementById('leadsTableBody').innerHTML=d.leads.map(function(l){var tier=l.quality_tier||'cold',score=l.lead_score||0;return '<tr><td><span class="score-badge '+tier+'">'+score+'</span></td><td style="color:var(--text)">'+(l.business_name||'').substring(0,35)+'</td><td>'+(l.primary_email||'<span style="color:var(--text-dim)">—</span>')+'</td><td style="color:var(--text-dim)">'+(l.category||'').substring(0,25)+'</td><td style="color:var(--text-dim)">'+(l.city||'')+'</td><td>'+(l.primary_phone||'')+'</td></tr>';}).join('');}}catch(e){console.error(e)}}
+async function fetchActivity(){try{const r=await fetch(API_BASE+'/api/v1/leads/batches?limit=8',{headers});const d=await r.json();if(d.batches&&d.batches.length>0){document.getElementById('activityFeed').innerHTML=d.batches.map(function(b){var time=b.completed_at?new Date(b.completed_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'pending';var dotColor=b.status==='completed'?'var(--green)':b.status==='processing'?'var(--warm)':'var(--cold)';return '<div class="activity-item"><div class="activity-time">'+time+'</div><div class="activity-dot" style="background:'+dotColor+'"></div><div>Batch '+b.batch_id.substring(0,8)+' - '+b.total+' URLs - '+(b.source||'scraper')+' - <span style="color:'+dotColor+'">'+b.status+'</span></div></div>';}).join('');}}catch(e){console.error(e)}}
+fetchStats();fetchLeads();fetchActivity();setInterval(function(){fetchStats();fetchLeads();fetchActivity();},60000);
+</script>
+</body>
+</html>

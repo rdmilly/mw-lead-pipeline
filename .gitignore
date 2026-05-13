@@ -1,0 +1,14 @@
+# Never commit these
+*.log
+*.pyc
+__pycache__/
+venv/
+.env
+
+# Too large for Git
+oregon_registry.db
+
+# Runtime state
+logs/
+*.pid
+browser_state/
