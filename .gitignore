@@ -12,3 +12,4 @@ oregon_registry.db
 logs/
 *.pid
 browser_state/
+data/postgres/

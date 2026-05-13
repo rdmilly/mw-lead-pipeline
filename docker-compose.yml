@@ -1,16 +1,34 @@
-version: "3.8"
-
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mw-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=leads
+      - POSTGRES_USER=leads
+      - POSTGRES_PASSWORD=leads-pw-change-me
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U leads"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   receiver:
     build: ./receiver
     container_name: mw-receiver
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "8099:8099"
     volumes:
       - ./data:/data
       - .:/app/repo
-      - /root/.ssh:/root/.ssh:ro
+      - /root/.git-credentials:/root/.git-credentials:ro
+      - /root/.gitconfig:/root/.gitconfig:ro
     environment:
       - MILLYEXT_API_KEY=${MILLYEXT_API_KEY:-milly-dev-key-change-me}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
@@ -20,14 +38,14 @@ services:
       - GEOAPIFY_KEY=${GEOAPIFY_KEY}
       - BING_MAPS_KEY=${BING_MAPS_KEY}
       - INSTANTLY_API_KEY=${INSTANTLY_API_KEY}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=leads
+      - DB_USER=leads
+      - DB_PASS=leads-pw-change-me
       - REPO_DIR=/app/repo
       - GIT_USER_NAME=Ryan Milly
       - GIT_USER_EMAIL=ryan@millyweb.com
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8099/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   scraper:
     build:
