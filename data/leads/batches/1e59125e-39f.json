@@ -1,0 +1,16 @@
+{
+  "batch_id": "1e59125e-39f",
+  "status": "processing",
+  "urls": [
+    "https://nroofingeugene.com/",
+    "https://foxroofingpdx.com/",
+    "http://surehandymanservices.com/",
+    "http://aarite-wayroofing.net/",
+    "https://www.bluemoonroofs.com/"
+  ],
+  "total": 5,
+  "source": "test-batch-migration",
+  "search_query": "",
+  "created_at": "2026-06-02T16:58:59.634618",
+  "started_at": "2026-06-02T16:58:59.652422"
+}

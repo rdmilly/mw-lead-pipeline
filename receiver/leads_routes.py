@@ -1,5 +1,3 @@
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from git_sync import sync as git_sync
 # MillyExt Receiver - Lead Scraper Routes
 # Manages batch URL submissions, result collection, PostgreSQL lead store with dedup
