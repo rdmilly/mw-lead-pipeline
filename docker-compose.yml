@@ -48,8 +48,7 @@ services:
       - GIT_USER_EMAIL=ryan@millyweb.com
 
   scraper:
-    build:
-      context: ./scraper
+    image: scraper-pipeline-scraper
     container_name: mw-scraper
     restart: unless-stopped
     depends_on:
