@@ -1,0 +1,19 @@
+{
+  "batch_id": "061684f0-7bc",
+  "status": "completed",
+  "urls": [
+    "https://nroofingeugene.com/",
+    "https://foxroofingpdx.com/"
+  ],
+  "total": 2,
+  "source": "test-batch-2",
+  "search_query": "",
+  "created_at": "2026-06-02T17:03:56.134368",
+  "started_at": "2026-06-02T17:08:25.590249",
+  "completed_at": "2026-06-02T17:08:31.678896",
+  "results_count": 2,
+  "successful": 2,
+  "failed": 0,
+  "new_leads": 0,
+  "updated_leads": 2
+}

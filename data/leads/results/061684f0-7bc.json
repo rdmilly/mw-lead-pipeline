@@ -1,0 +1,61 @@
+{
+  "batch_id": "061684f0-7bc",
+  "results": [
+    {
+      "source_url": "https://nroofingeugene.com/",
+      "final_url": "https://nroofingeugene.com/",
+      "business_name": "403",
+      "phones": [],
+      "emails": [],
+      "social_links": {},
+      "owner_info": {},
+      "meta": {
+        "title": "403 - Forbidden",
+        "description": ""
+      },
+      "subpages_scraped": [
+        "https://nroofingeugene.com/"
+      ],
+      "scraped_at": "2026-06-02T17:08:25Z",
+      "website_quality": {
+        "https": true,
+        "mobile_friendly": true,
+        "has_schema": false,
+        "has_booking": true,
+        "uses_wordpress": false,
+        "uses_wix": false,
+        "uses_squarespace": false
+      }
+    },
+    {
+      "source_url": "https://foxroofingpdx.com/",
+      "final_url": "https://foxroofingpdx.com/",
+      "business_name": "403",
+      "phones": [],
+      "emails": [],
+      "social_links": {},
+      "owner_info": {},
+      "meta": {
+        "title": "403 - Forbidden",
+        "description": ""
+      },
+      "subpages_scraped": [
+        "https://foxroofingpdx.com/"
+      ],
+      "scraped_at": "2026-06-02T17:08:25Z",
+      "website_quality": {
+        "https": true,
+        "mobile_friendly": true,
+        "has_schema": false,
+        "has_booking": true,
+        "uses_wordpress": false,
+        "uses_wix": false,
+        "uses_squarespace": false
+      }
+    }
+  ],
+  "total": 2,
+  "successful": 2,
+  "failed": 0,
+  "received_at": "2026-06-02T17:08:31.645764"
+}
